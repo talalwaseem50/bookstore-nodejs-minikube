@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: client-config
+data:
+  BOOKSTORE_SERVER_API_URL: bookstore-backend-service.default
+  BOOKSTORE_SERVER_API_PORT: "9001"
+  
+  

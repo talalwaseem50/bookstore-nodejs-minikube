@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql
+  labels:
+    app: bookstore-mysql
+spec:
+  containers:
+  - image: mysql:latest
+    name: mysql
+    env:
+    - name: MYSQL_ROOT_PASSWORD
+      value: toor
+    - name: MYSQL_DATABASE
+      value: bookstore
+    ports:
+    - containerPort: 3306
+      name: mysql
+    volumeMounts:
+    - name: bookstore-mysql-volume
+      mountPath: /var/lib/mysql
+  volumes:
+  - name: bookstore-mysql-volume
+    persistentVolumeClaim:
+      claimName: bookstore-pvc

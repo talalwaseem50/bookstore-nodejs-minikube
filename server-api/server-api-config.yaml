@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: server-api-config
+data:
+  DB_URL: bookstore-mysql-service.default
+  DB_USER: root
+  CLIENT: <front-end-app-service-ip>:<port>
+  PORT: "9001"
+  
+  
