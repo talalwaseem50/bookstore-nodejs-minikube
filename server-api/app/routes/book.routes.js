@@ -3,11 +3,17 @@ module.exports = app => {
   
     var router = require("express").Router();
   
-    // Create a new Book
     router.post("/", books.create);
   
-    // Retrieve all Books  
     router.get("/", books.findAll);
+
+    router.get("/:id", books.findOne);
+
+    router.put("/:id", books.update);
+
+    router.delete("/:id", books.delete);
+
+    router.get("/published", books.findAllPublished);
 
     app.use('/api/books', router);
 };    
