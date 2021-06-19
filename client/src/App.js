@@ -1,45 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import BookDataService from './services/book.service'
+import React from 'react'
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
-export default class PersonList extends React.Component {
-  state = {
-    sample: ''
-  }
+import SignIn from "./SignIn";
+import Console from "./admin-components/Console";
 
-  componentDidMount() {
-    BookDataService
-      .getAll()
-      .then(res => {
-        console.log(res)
-        this.setState({
-           sample: res.data.message
-        });
-      })
-  }
+class App extends React.Component {
 
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-            {this.state.sample}
-          </p>
-          <p>{window._env_.BOOKSTORE_SERVER_API_URL}:{window._env_.BOOKSTORE_SERVER_API_PORT}</p>
-          <p>Hello</p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    constructor() {
+        super()
+        this.state = {
+
+        }
+    }
+
+    render() {
+        return (
+            <BrowserRouter>
+                <Switch>
+                    <Route exact path="/" component={SignIn} />
+                    <Route exact path="/Console" component={Console} />
+                </Switch>
+            </BrowserRouter>
+        )
+        
+    }
+
 }
+
+export default App;
