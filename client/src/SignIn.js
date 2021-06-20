@@ -88,7 +88,7 @@ export default function SignInSide() {
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <BLink to="/Dashboard">
+            <BLink to="/Console">
             <Button
               type="submit"
               fullWidth

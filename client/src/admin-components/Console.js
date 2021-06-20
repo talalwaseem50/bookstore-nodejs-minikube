@@ -136,10 +136,6 @@ export default function Console() {
         .then(response => response.json())
         .then(res => {
             setSCError(false);
-            if (res.msg !== 'green' && res.msg !== 'yellow')
-                setDBCError(true)
-            else
-            setDBCError(false)
         }).catch(function() {
             setSCError(true);
         });

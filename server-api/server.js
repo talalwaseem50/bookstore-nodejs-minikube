@@ -14,7 +14,7 @@ app.use(cors());
 const db = require("./app/models");
 db.sequelize.sync();
 
-// simple route
+
 app.get("/api", (req, res) => {
   res.json({ message: "Welcome to bogo node application." });
   console.log('Test');
