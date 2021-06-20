@@ -29,9 +29,19 @@ export const mainListItems = (
             to="/Console/Users"
         >
             <ListItemIcon>
-                <PersonIcon />
+                <PeopleIcon />
             </ListItemIcon>
             <ListItemText primary="Users" />
+        </ListItem>
+        <ListItem 
+            button
+            component={BLink} 
+            to="/Console/orders"
+        >
+            <ListItemIcon>
+                <PersonIcon />
+            </ListItemIcon>
+            <ListItemText primary="Orders" />
         </ListItem>
     </div>
 );

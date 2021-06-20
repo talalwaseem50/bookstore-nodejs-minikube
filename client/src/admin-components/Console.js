@@ -20,6 +20,9 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { mainListItems, secondaryListItems } from './listItems';
 
+import Books from './Books'
+import Users from './Users'
+
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -201,11 +204,14 @@ export default function Console() {
                 }
                 <Container maxWidth="lg" className={classes.container}>
                     <Switch>
-                        <Route exact path={`${path}/users`}>
-                            
+                        <Route exact path={`${path}/Users`}>
+                            <Users />
+                        </Route>
+                        <Route exact path={`${path}/orders`}>
+                            <Books />
                         </Route>
                         <Route exact path={`${path}/`}>
-                            
+                            <Books />
                         </Route>
                     </Switch>
 			        <Box pt={4}>

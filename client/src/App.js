@@ -18,7 +18,7 @@ class App extends React.Component {
             <BrowserRouter>
                 <Switch>
                     <Route exact path="/" component={SignIn} />
-                    <Route exact path="/Console" component={Console} />
+                    <Route path="/Console"> <Console />  </Route>
                 </Switch>
             </BrowserRouter>
         )
