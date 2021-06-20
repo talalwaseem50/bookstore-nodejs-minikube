@@ -13,7 +13,5 @@ module.exports = app => {
 
     router.delete("/:id", books.delete);
 
-    router.get("/published", books.findAllPublished);
-
     app.use('/api/books', router);
 };    

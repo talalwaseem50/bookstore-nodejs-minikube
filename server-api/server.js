@@ -18,6 +18,8 @@ app.get("/api", (req, res) => {
 
 
 require("./app/routes/book.routes.js")(app);
+require("./app/routes/order.routes.js")(app);
+require("./app/routes/user.routes.js")(app);
 
 
 const PORT = process.env.PORT || 9001;
