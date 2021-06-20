@@ -3,9 +3,9 @@ kind: ConfigMap
 metadata:
   name: server-api-config
 data:
-  DB_URL: bookstore-mysql-service.default
-  DB_USER: root
-  CLIENT: <front-end-app-service-ip>:<port>
+  BOOKSTORE_DB: bookstore
+  BOOKSTORE_DB_URL: bookstore-mysql-service.default
+  BOOKSTORE_DB_USER: root
   PORT: "9001"
   
   
