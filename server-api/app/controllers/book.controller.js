@@ -6,19 +6,17 @@ const Op = db.Sequelize.Op;
 exports.create = (req, res) => {
 
   console.log(req.body)
-  if (!req.body.title) {
+  if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty."
     });
     return;
   }
 
-  const book = {
-    title: req.body.title,
-    description: req.body.description
-  };
+  req.body.date_added = new Date()
+  console.log(req.body)
 
-  Book.create(book)
+  Book.create(req.body)
     .then(data => {
       res.send(data);
     })
@@ -75,10 +73,12 @@ exports.update = (req, res) => {
     .then(num => {
       if (num == 1) {
         res.send({
+          updated: true,
           message: "Book was updated successfully."
         });
       } else {
         res.send({
+          updated: false,
           message: `Cannot update Book with id=${id}. Maybe Book was not found or req.body is empty!`
         });
       }
@@ -101,10 +101,12 @@ exports.delete = (req, res) => {
     .then(num => {
       if (num == 1) {
         res.send({
+          deleted: true,
           message: "Book was deleted successfully!"
         });
       } else {
         res.send({
+          deleted: false,
           message: `Cannot delete Book with id=${id}. Maybe Book was not found!`
         });
       }
@@ -134,17 +136,3 @@ exports.deleteAll = (req, res) => {
     });
 };
 
-
-
-exports.findAllPublished = (req, res) => {
-  Book.findAll({ where: { published: true } })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving bboks."
-      });
-    });
-};
