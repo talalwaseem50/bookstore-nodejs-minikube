@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -24,7 +24,6 @@ import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
@@ -32,9 +31,6 @@ import AddIcon from '@material-ui/icons/Add';
 
 import BookDataService from '../services/book.service'
 
-const rows = [
-  { id: '7', title: 'title1', publisher: 'publisher1', category: 'category1', price: 'price1', stock: 'stock', discount: 'discount'},
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -229,6 +225,17 @@ export default function Books() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [add, setAdd] = React.useState(false);
+  const [rows, setRows] = React.useState([]);
+
+  useEffect(() => {
+    BookDataService.getAll()
+    .then((response) => {
+      setRows(response.data)
+      console.log("Hello")
+    }, (error) => {
+      console.log(error);
+    });
+  }, []);
 
   const handleClickAddOpen = () => {
     setAdd(true);
@@ -239,22 +246,24 @@ export default function Books() {
   };
 
   const handleAddSubmitClose = () => {
-    console.log("Hello")
-
     const data = {
-        title: 't1',
+        title: 'ttttt',
         synopsis: 's1',
         publisher: 'p1',
         category: 'c1',
-        date_added: 'CURRENT_TIMESTAMP',
         price: '100',
         stock: 1,
         discount: 0.1,
         sub_status: 1
     }
 
-    BookDataService.create(data);
-
+    BookDataService.create(data)
+    .then((response) => {
+      setAdd(false);
+    }, (error) => {
+      setAdd(false);
+      console.log(error);
+    });
   };
 
   const handleRequestSort = (event, property) => {

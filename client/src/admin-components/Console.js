@@ -18,10 +18,11 @@ import Alert from '@material-ui/lab/Alert';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { mainListItems, secondaryListItems } from './listItems';
+import { mainListItems } from './listItems';
 
 import Books from './Books'
 import Users from './Users'
+import Orders from './Orders'
 
 function Copyright() {
     return (
@@ -187,7 +188,6 @@ export default function Console() {
                 <Divider />
                 <List>{mainListItems}</List>
                 <Divider />
-                <List>{secondaryListItems}</List>
             </Drawer>
             <main className={classes.content}>
                 <div className={classes.appBarSpacer} />
@@ -204,11 +204,11 @@ export default function Console() {
                 }
                 <Container maxWidth="lg" className={classes.container}>
                     <Switch>
-                        <Route exact path={`${path}/Users`}>
+                        <Route exact path={`${path}/users`}>
                             <Users />
                         </Route>
                         <Route exact path={`${path}/orders`}>
-                            <Books />
+                            <Orders />
                         </Route>
                         <Route exact path={`${path}/`}>
                             <Books />
