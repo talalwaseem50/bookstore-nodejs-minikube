@@ -46,8 +46,6 @@ if [ $? -ne 0 ]; then
    exit 1
 fi
 
-
-
 docker image build -t bookstore-client-container .
 if [ $? -ne 0 ]; then
    echo "Bookstore Client Docker Image Build failed. Exitting..!"
@@ -75,6 +73,12 @@ fi
 
 
 cd ../server-api
+kubectl create secret generic server-api-secrets -- from-literal=BOOKSTORE_DB_PASS=toor
+if [ $? -ne 0 ]; then
+   echo "Bookstore Server-API Secret failed. Exitting..!"
+   exit 1
+fi
+
 kubectl create -f server-api-config.yaml
 if [ $? -ne 0 ]; then
    echo "Bookstore Server-API Config Map failed. Exitting..!"
