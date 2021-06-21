@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import {Link as BLink} from "react-router-dom";
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -168,7 +169,7 @@ export default function Console() {
                 <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
                     Console
                 </Typography>
-                <IconButton color="inherit">
+                <IconButton color="inherit" component={BLink} to="/">
                     <ExitToAppIcon />
                 </IconButton>
                 </Toolbar>

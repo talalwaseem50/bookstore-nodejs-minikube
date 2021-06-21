@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
 import SignIn from "./SignIn";
 import Console from "./admin-components/Console";
+import Dashboard from "./user-components/Dashboard"
 
 class App extends React.Component {
 
@@ -18,7 +19,8 @@ class App extends React.Component {
             <BrowserRouter>
                 <Switch>
                     <Route exact path="/" component={SignIn} />
-                    <Route path="/Console"> <Console />  </Route>
+                    <Route path="/Console" component={Console} />
+                    <Route path="/Dashboard" component={Dashboard} />
                 </Switch>
             </BrowserRouter>
         )

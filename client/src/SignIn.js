@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import {Link as BLink} from "react-router-dom";
 
-import background from './images/4.jpg'
+import background from './images/background.jpg'
 
 const useStyles = makeStyles((theme) => ({
   root: {
