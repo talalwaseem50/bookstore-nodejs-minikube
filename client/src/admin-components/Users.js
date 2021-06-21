@@ -5,6 +5,7 @@ import { lighten, makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
+import MenuItem from '@material-ui/core/MenuItem';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -217,13 +218,23 @@ const useStyles = makeStyles((theme) => ({
 export default function Users() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('title');
+  const [orderBy, setOrderBy] = React.useState('fullname');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [add, setAdd] = React.useState(false);
   const [display, setDisplay] = React.useState(false);
   const [rows, setRows] = React.useState([]);
+
+  const [selectedUserID, setSelectedUserID] = React.useState(0);
+
+  const [sFullname, setSFullname] = React.useState('');
+  const [sGender, setSGender] = React.useState('');
+  const [sContactno, setSContactno] = React.useState('');
+  const [sEmailaddress, setSEmailaddress] = React.useState('');
+  const [sPass, setSPass] = React.useState('');
+  const [sShippingaddress, setSShippingaddress] = React.useState('');
+  const [sAccessprivileges, setSAccessprivileges] = React.useState('');
 
   useEffect(() => {
     getAllUsers()
@@ -239,6 +250,25 @@ export default function Users() {
     });
   }
 
+  const getUser = (id) => {
+    UserDataService.get(id)
+    .then((response) => {
+      setSFullname(response.data.fullname)
+      setSGender(response.data.gender)
+      setSContactno(response.data.contactno)
+      setSEmailaddress(response.data.email_address)
+      setSPass(response.data.pass)
+      setSShippingaddress(response.data.shipping_address)
+      setSAccessprivileges(response.data.access_privileges)
+
+      setDisplay(true)
+      console.log(response.data)
+    }, (error) => {
+      console.log(error);
+    });
+  };
+
+
   const handleClickAddOpen = () => {
     setAdd(true);
   };
@@ -249,14 +279,16 @@ export default function Users() {
 
   const handleAddSubmitClose = () => {
     const data = {
-        fullname: 'tname',
-        gender: 'M',
-        contactno: 'cn',
-        email_address: 'ea',
-        pass: '123',
-        shipping_address: 'sa',
-        access_privileges: 'User'
+        fullname: sFullname,
+        gender: sGender,
+        contactno: sContactno,
+        email_address: sEmailaddress,
+        pass: sPass,
+        shipping_address: sShippingaddress,
+        access_privileges: sAccessprivileges
     }
+
+    console.log(data)
 
     UserDataService.create(data)
     .then((response) => {
@@ -268,25 +300,63 @@ export default function Users() {
     });
   };
 
+
   const handleDisplayClose = () => {
     setDisplay(false);
   };
 
   const handleDisplayUpdateClose = () => {
-    setDisplay(false);
+    const data = {
+        fullname: sFullname,
+        gender: sGender,
+        contactno: sContactno,
+        email_address: sEmailaddress,
+        pass: sPass,
+        shipping_address: sShippingaddress,
+        access_privileges: sAccessprivileges
+    }
+
+    UserDataService.update(selectedUserID, data)
+    .then((response) => {
+      setDisplay(false)
+      getAllUsers();
+      console.log(response.data)
+    }, (error) => {
+      console.log(error);
+    });
   };
 
   const handleDisplayDeleteClose = () => {
-    /*
-    BookDataService.create(data)
+    UserDataService.delete(selectedUserID)
     .then((response) => {
-      setAdd(false);
-      getAllBooks()
+      setDisplay(false);
+      getAllUsers()
+      console.log(response.data);
     }, (error) => {
-      setAdd(false);
       console.log(error);
-    });*/
-    setDisplay(false);
+    });
+  };
+
+
+  const onTextFieldChange = (event, value) => {
+    console.log(event.target.id)
+    console.log(event.target.value)
+
+    if (event.target.id === 'fullname')
+      setSFullname(event.target.value) 
+    else if (event.target.id === 'genders')
+    setSGender(event.target.value)
+    else if (event.target.id === 'contactno')
+    setSContactno(event.target.value)
+    else if (event.target.id === 'email_address')
+    setSEmailaddress(event.target.value)
+    else if (event.target.id === 'pass')
+    setSPass(event.target.value)
+    else if (event.target.id === 'shipping_address')
+    setSShippingaddress(event.target.value)
+    else 
+      setSAccessprivileges(event.target.value)
+    
   };
 
 
@@ -305,7 +375,7 @@ export default function Users() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (event, id) => {
     /*const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -323,8 +393,9 @@ export default function Users() {
     }
 
     setSelected(newSelected);*/
-    setDisplay(true);
-    console.log(name);
+    setSelectedUserID(id)
+    getUser(id);
+    console.log(id);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -374,7 +445,7 @@ export default function Users() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.id}
                       selected={isItemSelected}
                     >
                     <TableCell padding="checkbox">
@@ -421,13 +492,20 @@ export default function Users() {
         <Dialog open={add} onClose={handleAddClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add new User</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            id="title"
-            label="Title"
-            type="text"
-            fullWidth
-          />
+          <TextField id="fullname" label="Full Name" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="gender" label="Gender (M, F)" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="contactno" label="Conatact No" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="email_address" label="Email Address" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="pass" label="Password" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="shipping_address" label="Shipping Address" type="text" onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
+          <TextField id="access_privileges" label="Access" select value={sAccessprivileges} onChange={onTextFieldChange} fullWidth>
+          <MenuItem id="access_privileges" key='User' value='User'>
+              User
+            </MenuItem>
+            <MenuItem id="access_privileges" key='Admin' value='Admin'>
+              Admin
+            </MenuItem>
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleAddClose} color="primary">
@@ -442,7 +520,20 @@ export default function Users() {
       <Dialog open={display} onClose={handleDisplayClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">User Details</DialogTitle>
         <DialogContent>
-          
+          <TextField id="fullname" label="Full Name" type="text" value={sFullname} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="gender" label="Gender (M, F)" type="text" value={sGender} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="contactno" label="Conatact No" type="text" value={sContactno} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="email_address" label="Email Address" type="text" value={sEmailaddress} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="pass" label="Password" type="text" value={sPass} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="shipping_address" label="Shipping Address" type="text" value={sShippingaddress} onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
+          <TextField id="access_privileges" label="Access" select value={sAccessprivileges} onChange={onTextFieldChange} fullWidth>
+          <MenuItem id="access_privileges" key='User' value='User'>
+              User
+            </MenuItem>
+            <MenuItem id="access_privileges" key='Admin' value='Admin'>
+              Admin
+            </MenuItem>
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDisplayUpdateClose} color="primary">

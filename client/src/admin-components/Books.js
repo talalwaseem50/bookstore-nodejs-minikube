@@ -325,6 +325,7 @@ export default function Books() {
     BookDataService.update(selectedBookID, data)
     .then((response) => {
       setDisplay(false)
+      getAllBooks()
       console.log(response.data)
     }, (error) => {
       console.log(error);
@@ -336,8 +337,8 @@ export default function Books() {
     .then((response) => {
       setDisplay(false);
       getAllBooks()
+      console.log(response.data);
     }, (error) => {
-      setAdd(false);
       console.log(error);
     });
   };
@@ -382,7 +383,7 @@ export default function Books() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (event, id) => {
     /*const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -400,9 +401,9 @@ export default function Books() {
     }
 
     setSelected(newSelected);*/
-    setSelectedBookID(name);
-    getBook(name);
-    console.log(name);
+    setSelectedBookID(id);
+    getBook(id);
+    console.log(id);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -528,7 +529,7 @@ export default function Books() {
       <Dialog open={display} onClose={handleDisplayClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Book Details</DialogTitle>
         <DialogContent>
-        <TextField id="title" label="Title" type="text" value={sTitle} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="title" label="Title" type="text" value={sTitle} onChange={onTextFieldChange} fullWidth/>
           <TextField id="synopsis" label="Synopsis" type="text" value={sSynopsis} onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
           <TextField id="publisher" label="Publisher" type="text" value={sPublisher} onChange={onTextFieldChange} fullWidth/>
           <TextField id="category" label="Category" type="text" value={sCategory} onChange={onTextFieldChange} fullWidth/>
