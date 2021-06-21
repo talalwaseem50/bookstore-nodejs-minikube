@@ -19,8 +19,6 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -229,7 +227,6 @@ export default function Books() {
   const [rows, setRows] = React.useState([]);
 
   const [selectedBookID, setSelectedBookID] = React.useState(0);
-  const [selectedBook, setSelectedBook] = React.useState({});
 
   const [sTitle, setSTitle] = React.useState('');
   const [sSynopsis, setSSynopsis] = React.useState('');
@@ -258,16 +255,6 @@ export default function Books() {
   const getBook = (id) => {
     BookDataService.get(id)
     .then((response) => {
-      const data = {
-        title: sTitle,
-        synopsis: sSynopsis,
-        publisher: sPublisher,
-        category: sCategory,
-        price: sPrice,
-        stock: sStock,
-        discount: sDiscount,
-        sub_status: sSubstatus
-    }
       setSTitle(response.data.title)
       setSSynopsis(response.data.synopsis)
       setSPublisher(response.data.publisher)
@@ -324,7 +311,24 @@ export default function Books() {
   };
 
   const handleDisplayUpdateClose = () => {
-    setDisplay(false);
+    const data = {
+      title: sTitle,
+      synopsis: sSynopsis,
+      publisher: sPublisher,
+      category: sCategory,
+      price: sPrice,
+      stock: sStock,
+      discount: sDiscount,
+      sub_status: sSubstatus
+    }
+
+    BookDataService.update(selectedBookID, data)
+    .then((response) => {
+      setDisplay(false)
+      console.log(response.data)
+    }, (error) => {
+      console.log(error);
+    });
   };
 
   const handleDisplayDeleteClose = () => {
@@ -379,8 +383,8 @@ export default function Books() {
   };
 
   const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    /*let newSelected = [];
+    /*const selectedIndex = selected.indexOf(name);
+    let newSelected = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
@@ -448,7 +452,7 @@ export default function Books() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.id}
                       selected={isItemSelected}
                     >
                     <TableCell padding="checkbox">
@@ -495,13 +499,13 @@ export default function Books() {
         <Dialog open={add} onClose={handleAddClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title">Add new Book</DialogTitle>
         <DialogContent>
-          <TextField id="title" label="Title" type="text" value={sTitle} onChange={onTextFieldChange} fullWidth/>
-          <TextField id="synopsis" label="Synopsis" type="text" value={sSynopsis} onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
-          <TextField id="publisher" label="Publisher" type="text" value={sPublisher} onChange={onTextFieldChange} fullWidth/>
-          <TextField id="category" label="Category" type="text" value={sCategory} onChange={onTextFieldChange} fullWidth/>
-          <TextField id="price" label="Price" type="text" value={sPrice} onChange={onTextFieldChange} fullWidth/>
-          <TextField id="stock" label="Stock" type="number" value={sStock} onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0, max: 1000 } }}/>
-          <TextField id="discount" label="Discount" type="number" value={sDiscount} onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0.0, max: 1.0 } }}/>
+          <TextField id="title" label="Title" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="synopsis" label="Synopsis" type="text" onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
+          <TextField id="publisher" label="Publisher" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="category" label="Category" type="text" onChange={onTextFieldChange} fullWidth/>
+          <TextField id="price" label="Price" type="text"  onChange={onTextFieldChange} fullWidth/>
+          <TextField id="stock" label="Stock" type="number" onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0, max: 1000 } }}/>
+          <TextField id="discount" label="Discount" type="number" onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0.0, max: 1.0 } }}/>
           <TextField id="sub_status" label="Subscription" select value={sSubstatus} onChange={onTextFieldChange} fullWidth>
             <MenuItem id="sub_status" key='No' value={0}>
               No
