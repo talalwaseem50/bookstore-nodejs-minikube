@@ -7,6 +7,7 @@ COPY ./src ./src
 RUN npm run build
 
 FROM nginx:latest
+COPY default.conf /etc/nginx/conf.d/default.conf
 COPY --from=bookstore-client-build /client/build/ /usr/share/nginx/html
 EXPOSE 80
 
