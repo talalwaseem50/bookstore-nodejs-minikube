@@ -1,8 +1,8 @@
 module.exports = {
     HOST: process.env.BOOKSTORE_DB_URL,
-    USER: process.env.BOOKSTORE_DB_USER,
+    USER: process.env.BOOKSTORE_DB_USER || 'root',
     PASSWORD: "toor",
-    DB: process.env.BOOKSTORE_DB,
+    DB: process.env.BOOKSTORE_DB || 'bookstore',
     dialect: "mysql",
     pool: {
       max: 10,

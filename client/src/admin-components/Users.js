@@ -159,7 +159,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            Books
+            Users
         </Typography>
       )}
 
@@ -222,12 +222,16 @@ export default function Users() {
   const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [add, setAdd] = React.useState(false);
+  const [display, setDisplay] = React.useState(false);
   const [rows, setRows] = React.useState([]);
 
   useEffect(() => {
+    getAllUsers()
+  }, []);
+
+  const getAllUsers = () => {
     UserDataService.getAll()
     .then((response) => {
         console.log(response.data)
@@ -235,7 +239,7 @@ export default function Users() {
     }, (error) => {
       console.log(error);
     });
-  }, []);
+  }
 
   const handleClickAddOpen = () => {
     setAdd(true);
@@ -259,11 +263,34 @@ export default function Users() {
     UserDataService.create(data)
     .then((response) => {
       setAdd(false);
+      getAllUsers()
     }, (error) => {
       setAdd(false);
       console.log(error);
     });
   };
+
+  const handleDisplayClose = () => {
+    setDisplay(false);
+  };
+
+  const handleDisplayUpdateClose = () => {
+    setDisplay(false);
+  };
+
+  const handleDisplayDeleteClose = () => {
+    /*
+    BookDataService.create(data)
+    .then((response) => {
+      setAdd(false);
+      getAllBooks()
+    }, (error) => {
+      setAdd(false);
+      console.log(error);
+    });*/
+    setDisplay(false);
+  };
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -298,6 +325,7 @@ export default function Users() {
     }
 
     setSelected(newSelected);*/
+    setDisplay(true);
     console.log(name);
   };
 
@@ -308,10 +336,6 @@ export default function Users() {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -326,7 +350,7 @@ export default function Users() {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
             aria-label="books table"
           >
             <EnhancedTableHead
@@ -374,7 +398,7 @@ export default function Users() {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -391,17 +415,13 @@ export default function Users() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
 
       <Fab color="primary" aria-label="add" className={classes.fab} onClick={handleClickAddOpen}>
         <AddIcon />
         </Fab>
 
         <Dialog open={add} onClose={handleAddClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogTitle id="form-dialog-title">Add new User</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -416,10 +436,26 @@ export default function Users() {
             Cancel
           </Button>
           <Button onClick={handleAddSubmitClose} color="primary">
-            Subscribe
+              Add
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={display} onClose={handleDisplayClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">User Details</DialogTitle>
+        <DialogContent>
+          
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDisplayUpdateClose} color="primary">
+            Update
+          </Button>
+          <Button onClick={handleDisplayDeleteClose} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </div>
   );
 }

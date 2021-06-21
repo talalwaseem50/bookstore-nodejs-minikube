@@ -5,6 +5,7 @@ import { lighten, makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
+import MenuItem from '@material-ui/core/MenuItem';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -222,20 +223,67 @@ export default function Books() {
   const [orderBy, setOrderBy] = React.useState('title');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [add, setAdd] = React.useState(false);
+  const [display, setDisplay] = React.useState(false);
   const [rows, setRows] = React.useState([]);
 
+  const [selectedBookID, setSelectedBookID] = React.useState(0);
+  const [selectedBook, setSelectedBook] = React.useState({});
+
+  const [sTitle, setSTitle] = React.useState('');
+  const [sSynopsis, setSSynopsis] = React.useState('');
+  const [sPublisher, setSPublisher] = React.useState('');
+  const [sCategory, setSCategory] = React.useState('');
+  const [sPrice, setSPrice] = React.useState('');
+  const [sStock, setSStock] = React.useState(0);
+  const [sDiscount, setSDiscount] = React.useState(0.0);
+  const [sSubstatus, setSSubstatus] = React.useState(0);
+
+
   useEffect(() => {
+    getAllBooks()
+  }, []);
+
+  const getAllBooks = () => {
     BookDataService.getAll()
     .then((response) => {
       setRows(response.data)
-      console.log("Hello")
+      console.log("getBooks")
     }, (error) => {
       console.log(error);
     });
-  }, []);
+  };
+
+  const getBook = (id) => {
+    BookDataService.get(id)
+    .then((response) => {
+      const data = {
+        title: sTitle,
+        synopsis: sSynopsis,
+        publisher: sPublisher,
+        category: sCategory,
+        price: sPrice,
+        stock: sStock,
+        discount: sDiscount,
+        sub_status: sSubstatus
+    }
+      setSTitle(response.data.title)
+      setSSynopsis(response.data.synopsis)
+      setSPublisher(response.data.publisher)
+      setSCategory(response.data.category)
+      setSPrice(response.data.price)
+      setSStock(response.data.stock)
+      setSDiscount(response.data.discount)
+      setSSubstatus(response.data.sub_status)
+
+      setDisplay(true)
+      console.log(response.data)
+    }, (error) => {
+      console.log(error);
+    });
+  };
+
 
   const handleClickAddOpen = () => {
     setAdd(true);
@@ -247,24 +295,73 @@ export default function Books() {
 
   const handleAddSubmitClose = () => {
     const data = {
-        title: 'ttttt',
-        synopsis: 's1',
-        publisher: 'p1',
-        category: 'c1',
-        price: '100',
-        stock: 1,
-        discount: 0.1,
-        sub_status: 1
+        title: sTitle,
+        synopsis: sSynopsis,
+        publisher: sPublisher,
+        category: sCategory,
+        price: sPrice,
+        stock: sStock,
+        discount: sDiscount,
+        sub_status: sSubstatus
     }
+
+    console.log(data)
 
     BookDataService.create(data)
     .then((response) => {
       setAdd(false);
+      getAllBooks()
+    }, (error) => {
+      setAdd(false);
+      console.log(error);
+    });
+
+  };
+
+
+  const handleDisplayClose = () => {
+    setDisplay(false);
+  };
+
+  const handleDisplayUpdateClose = () => {
+    setDisplay(false);
+  };
+
+  const handleDisplayDeleteClose = () => {
+    BookDataService.delete(selectedBookID)
+    .then((response) => {
+      setDisplay(false);
+      getAllBooks()
     }, (error) => {
       setAdd(false);
       console.log(error);
     });
   };
+
+
+  const onTextFieldChange = (event, value) => {
+    console.log(event.target.id)
+    console.log(event.target.value)
+
+    if (event.target.id === 'title')
+      setSTitle(event.target.value) 
+    else if (event.target.id === 'synopsis')
+    setSSynopsis(event.target.value)
+    else if (event.target.id === 'publisher')
+    setSPublisher(event.target.value)
+    else if (event.target.id === 'category')
+    setSCategory(event.target.value)
+    else if (event.target.id === 'price')
+    setSPrice(event.target.value)
+    else if (event.target.id === 'stock')
+    setSStock(event.target.value)
+    else if (event.target.id === 'discount')
+    setSDiscount(event.target.value)
+    else 
+      setSSubstatus(event.target.value)
+    
+  };
+
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -299,6 +396,8 @@ export default function Books() {
     }
 
     setSelected(newSelected);*/
+    setSelectedBookID(name);
+    getBook(name);
     console.log(name);
   };
 
@@ -309,10 +408,6 @@ export default function Books() {
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
-  };
-
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
   };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -327,7 +422,7 @@ export default function Books() {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
             aria-label="books table"
           >
             <EnhancedTableHead
@@ -375,7 +470,7 @@ export default function Books() {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -392,32 +487,65 @@ export default function Books() {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
 
       <Fab color="primary" aria-label="add" className={classes.fab} onClick={handleClickAddOpen}>
         <AddIcon />
-        </Fab>
+      </Fab>
 
         <Dialog open={add} onClose={handleAddClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogTitle id="form-dialog-title">Add new Book</DialogTitle>
         <DialogContent>
-          <TextField
-            autoFocus
-            id="title"
-            label="Title"
-            type="text"
-            fullWidth
-          />
+          <TextField id="title" label="Title" type="text" value={sTitle} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="synopsis" label="Synopsis" type="text" value={sSynopsis} onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
+          <TextField id="publisher" label="Publisher" type="text" value={sPublisher} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="category" label="Category" type="text" value={sCategory} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="price" label="Price" type="text" value={sPrice} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="stock" label="Stock" type="number" value={sStock} onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0, max: 1000 } }}/>
+          <TextField id="discount" label="Discount" type="number" value={sDiscount} onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0.0, max: 1.0 } }}/>
+          <TextField id="sub_status" label="Subscription" select value={sSubstatus} onChange={onTextFieldChange} fullWidth>
+            <MenuItem id="sub_status" key='No' value={0}>
+              No
+            </MenuItem>
+            <MenuItem id="sub_status" key='Yes' value={1}>
+              Yes
+            </MenuItem>
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleAddClose} color="primary">
             Cancel
           </Button>
           <Button onClick={handleAddSubmitClose} color="primary">
-            Subscribe
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={display} onClose={handleDisplayClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Book Details</DialogTitle>
+        <DialogContent>
+        <TextField id="title" label="Title" type="text" value={sTitle} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="synopsis" label="Synopsis" type="text" value={sSynopsis} onChange={onTextFieldChange} fullWidth multiline rowsMax={4}/>
+          <TextField id="publisher" label="Publisher" type="text" value={sPublisher} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="category" label="Category" type="text" value={sCategory} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="price" label="Price" type="text" value={sPrice} onChange={onTextFieldChange} fullWidth/>
+          <TextField id="stock" label="Stock" type="number" value={sStock} onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0, max: 1000 } }}/>
+          <TextField id="discount" label="Discount" type="number" value={sDiscount} onChange={onTextFieldChange} fullWidth InputProps={{ inputProps: { min: 0.0, max: 1.0 } }}/>
+          <TextField id="sub_status" label="Subscription" select value={sSubstatus} onChange={onTextFieldChange} fullWidth>
+          <MenuItem id="sub_status" key='No' value={0}>
+              No
+            </MenuItem>
+            <MenuItem id="sub_status" key='Yes' value={1}>
+              Yes
+            </MenuItem>
+          </TextField>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDisplayUpdateClose} color="primary">
+            Update
+          </Button>
+          <Button onClick={handleDisplayDeleteClose} color="primary">
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
