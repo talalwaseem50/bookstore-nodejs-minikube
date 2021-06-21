@@ -11,9 +11,10 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import {Link as BLink} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 import background from './images/background.jpg'
+import UserDataService from './services/user.service'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,6 +49,35 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignInSide() {
   const classes = useStyles();
+  const history = useHistory();
+
+  const [sEmailaddress, setSEmailaddress] = React.useState('');
+  const [sPass, setSPass] = React.useState('');
+
+  const onTextFieldChange = (event, value) => {
+    if (event.target.id === 'email')
+    setSEmailaddress(event.target.value)
+    else if (event.target.id === 'password')
+    setSPass(event.target.value)
+  };
+
+  const handleUserVerification = () => {
+    UserDataService.getAll()
+    .then((response) => {
+      console.log(response.data)
+      for (var i = 0; i < response.data.length; i++) {
+        if (response.data[i].email_address === sEmailaddress && response.data[i].pass === sPass) {
+          if (response.data[i].access_privileges === "User")
+            history.push("/Dashboard")
+          else
+            history.push("/Console")
+          break;
+        }
+      }
+    }, (error) => {
+      console.log(error);
+    });
+  };
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -61,17 +91,18 @@ export default function SignInSide() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form className={classes.form} noValidate>
+          {/*<form className={classes.form} noValidate>*/}
             <TextField
               variant="outlined"
               margin="normal"
               required
               fullWidth
               id="email"
-              label="Username"
+              label="Email"
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={onTextFieldChange}
             />
             <TextField
               variant="outlined"
@@ -83,23 +114,22 @@ export default function SignInSide() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={onTextFieldChange}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
               label="Remember me"
             />
-            <BLink to="/Console">
             <Button
               type="submit"
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
-              
+              onClick={handleUserVerification}
             >
               Sign In
             </Button>
-            </BLink>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
@@ -112,7 +142,7 @@ export default function SignInSide() {
                 </Link>
               </Grid>
             </Grid>
-          </form>
+          {/*</form>*/}
         </div>
       </Grid>
     </Grid>

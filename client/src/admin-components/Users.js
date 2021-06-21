@@ -344,7 +344,7 @@ export default function Users() {
 
     if (event.target.id === 'fullname')
       setSFullname(event.target.value) 
-    else if (event.target.id === 'genders')
+    else if (event.target.id === 'gender')
     setSGender(event.target.value)
     else if (event.target.id === 'contactno')
     setSContactno(event.target.value)
