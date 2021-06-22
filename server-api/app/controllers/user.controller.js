@@ -5,7 +5,6 @@ const Op = db.Sequelize.Op;
 
 exports.create = (req, res) => {
 
-  console.log(req.body)
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty."
@@ -14,7 +13,6 @@ exports.create = (req, res) => {
   }
 
   req.body.date_joined = new Date()
-  console.log(req.body)
 
   User.create(req.body)
     .then(data => {

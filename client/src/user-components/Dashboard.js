@@ -11,7 +11,8 @@ class Dashboard extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            add: false
+            add: false,
+            data: props.location.state.data
         }
         this.handleClickAddOpen = this.handleClickAddOpen.bind(this)
         this.handleAddClose = this.handleAddClose.bind(this)
@@ -33,7 +34,7 @@ class Dashboard extends React.Component {
     
     handleAddSubmitClose() {
         const data = {
-          userId: 1,
+          userId: this.state.data.id || 1,
           order_status: 'Pending'
         }
     

@@ -72,7 +72,7 @@ export default function SignInSide() {
         for (var i = 0; i < response.data.length; i++) {
           if (response.data[i].email_address === sEmailaddress && response.data[i].pass === sPass) {
             if (response.data[i].access_privileges === "User")
-              history.push("/Dashboard")
+              history.push("/Dashboard", { data: response.data[i] })
             else
               history.push("/Console")
             break;
