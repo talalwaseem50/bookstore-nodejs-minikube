@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
 import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
+import MenuItem from '@material-ui/core/MenuItem';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -25,9 +25,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
-import AddIcon from '@material-ui/icons/Add';
 
-import UserDataService from '../services/user.service'
+import OrderDataService from '../services/order.service'
 
 
 function descendingComparator(a, b, orderBy) {
@@ -57,12 +56,10 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  { id: 'fullname', numeric: false, disablePadding: true, label: 'Name' },
-  { id: 'gender', numeric: false, disablePadding: false, label: 'Gender' },
-  { id: 'contactno', numeric: false, disablePadding: false, label: 'ConatctNo' },
-  { id: 'email_address', numeric: false, disablePadding: false, label: 'Email' },
-  { id: 'shipping_address', numeric: false, disablePadding: false, label: 'Shipping Address' },
-  { id: 'access_privileges', numeric: false, disablePadding: false, label: 'Type' },
+  { id: 'id', numeric: false, disablePadding: true, label: 'ID' },
+  { id: 'userId', numeric: false, disablePadding: false, label: 'User' },
+  { id: 'order_date', numeric: false, disablePadding: false, label: 'Date' },
+  { id: 'order_status', numeric: false, disablePadding: false, label: 'Status' },
 ];
 
 function EnhancedTableHead(props) {
@@ -157,7 +154,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-            Users
+            Orders
         </Typography>
       )}
 
@@ -216,21 +213,27 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Users() {
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('title');
+  const [order, setOrder] = React.useState('desc');
+  const [orderBy, setOrderBy] = React.useState('order_date');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [add, setAdd] = React.useState(false);
   const [display, setDisplay] = React.useState(false);
   const [rows, setRows] = React.useState([]);
 
+  const [selectedOrderID, setSelectedOrderID] = React.useState(0);
+
+  const [sID, setSID] = React.useState(0);
+  const [sUserID, setSUserID] = React.useState(0);
+  const [sOrderDate, setSOrderDate] = React.useState('');
+  const [sOrderStatus, setSOrderStatus] = React.useState('');
+
   useEffect(() => {
-    getAllUsers()
+    getAllOrders()
   }, []);
 
-  const getAllUsers = () => {
-    UserDataService.getAll()
+  const getAllOrders = () => {
+    OrderDataService.getAll()
     .then((response) => {
         console.log(response.data)
       setRows(response.data)
@@ -239,54 +242,58 @@ export default function Users() {
     });
   }
 
-  const handleClickAddOpen = () => {
-    setAdd(true);
-  };
-
-  const handleAddClose = () => {
-    setAdd(false);
-  };
-
-  const handleAddSubmitClose = () => {
-    const data = {
-        fullname: 'tname',
-        gender: 'M',
-        contactno: 'cn',
-        email_address: 'ea',
-        pass: '123',
-        shipping_address: 'sa',
-        access_privileges: 'User'
-    }
-
-    UserDataService.create(data)
+  const getOrder = (id) => {
+    OrderDataService.get(id)
     .then((response) => {
-      setAdd(false);
-      getAllUsers()
+      setSID(response.data.id)
+      setSUserID(response.data.userId)
+      setSOrderDate(response.data.order_date)
+      setSOrderStatus(response.data.order_status)
+
+      setDisplay(true)
+      console.log(response.data)
     }, (error) => {
-      setAdd(false);
       console.log(error);
     });
   };
+
 
   const handleDisplayClose = () => {
     setDisplay(false);
   };
 
   const handleDisplayUpdateClose = () => {
-    setDisplay(false);
+    const data = {
+      order_status: sOrderStatus
+    }
+
+    OrderDataService.update(selectedOrderID, data)
+    .then((response) => {
+      setDisplay(false)
+      getAllOrders();
+      console.log(response.data)
+    }, (error) => {
+      console.log(error);
+    });
   };
 
   const handleDisplayDeleteClose = () => {
-    /*
-    BookDataService.create(data)
+    OrderDataService.delete(selectedOrderID)
     .then((response) => {
-      setAdd(false);
-      getAllBooks()
+      setDisplay(false);
+      getAllOrders()
+      console.log(response.data);
     }, (error) => {
-      setAdd(false);
       console.log(error);
-    });*/
-    setDisplay(false);
+    });
+  };
+
+
+  const onTextFieldChange = (event, value) => {
+    console.log(event.target.id)
+    console.log(event.target.value)
+
+    setSOrderStatus(event.target.value)
   };
 
 
@@ -305,7 +312,7 @@ export default function Users() {
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
+  const handleClick = (event, id) => {
     /*const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -323,8 +330,9 @@ export default function Users() {
     }
 
     setSelected(newSelected);*/
-    setDisplay(true);
-    console.log(name);
+    setSelectedOrderID(id)
+    getOrder(id);
+    console.log(id);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -349,7 +357,7 @@ export default function Users() {
             className={classes.table}
             aria-labelledby="tableTitle"
             size='medium'
-            aria-label="books table"
+            aria-label="orders table"
           >
             <EnhancedTableHead
               classes={classes}
@@ -374,7 +382,7 @@ export default function Users() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={row.id}
                       selected={isItemSelected}
                     >
                     <TableCell padding="checkbox">
@@ -385,13 +393,11 @@ export default function Users() {
                       </TableCell>
                 
                       <TableCell component="th" id={labelId} scope="row" padding="none">
-                        {row.fullname}
+                        {row.id}
                       </TableCell>
-                      <TableCell align="left">{row.gender}</TableCell>
-                      <TableCell align="left">{row.contactno}</TableCell>
-                      <TableCell align="left">{row.email_address}</TableCell>
-                      <TableCell align="left">{row.shipping_address}</TableCell>
-                      <TableCell align="left">{row.access_privileges}</TableCell>
+                      <TableCell align="left">{row.userId}</TableCell>
+                      <TableCell align="left">{row.order_date}</TableCell>
+                      <TableCell align="left">{row.order_status}</TableCell>
                     </TableRow>
                   );
                 })}
@@ -414,35 +420,20 @@ export default function Users() {
         />
       </Paper>
 
-      <Fab color="primary" aria-label="add" className={classes.fab} onClick={handleClickAddOpen}>
-        <AddIcon />
-        </Fab>
-
-        <Dialog open={add} onClose={handleAddClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add new User</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            id="title"
-            label="Title"
-            type="text"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleAddClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddSubmitClose} color="primary">
-              Add
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       <Dialog open={display} onClose={handleDisplayClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">User Details</DialogTitle>
+        <DialogTitle id="form-dialog-title">Order Details</DialogTitle>
         <DialogContent>
-          
+          <TextField id="id" label="Order ID" type="text" disabled value={sID} fullWidth/>
+          <TextField id="userId" label="User ID" type="text" disabled value={sUserID} fullWidth/>
+          <TextField id="order_date" label="Date" type="text" disabled value={sOrderDate} fullWidth/>
+          <TextField id="order_status" label="Status" select value={sOrderStatus} onChange={onTextFieldChange} fullWidth>
+          <MenuItem id="order_status" key='Pending' value='Pending'>
+              Pending
+            </MenuItem>
+            <MenuItem id="order_status" key='Completed' value='Completed'>
+              Completed
+            </MenuItem>
+          </TextField>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDisplayUpdateClose} color="primary">

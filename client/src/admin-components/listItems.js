@@ -29,7 +29,7 @@ export const mainListItems = (
             <ListItemIcon>
                 <PeopleIcon />
             </ListItemIcon>
-            <ListItemText primary="users" />
+            <ListItemText primary="Users" />
         </ListItem>
         <ListItem 
             button
@@ -39,7 +39,7 @@ export const mainListItems = (
             <ListItemIcon>
                 <AssignmentIcon />
             </ListItemIcon>
-            <ListItemText primary="orders" />
+            <ListItemText primary="Orders" />
         </ListItem>
     </div>
 );
